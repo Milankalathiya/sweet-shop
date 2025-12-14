@@ -19,7 +19,7 @@ export function Navbar() {
   const { user, logout } = useAuth();
   const { itemCount } = useCart();
   const [location, setLocation] = useLocation();
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
     if (isDark) {

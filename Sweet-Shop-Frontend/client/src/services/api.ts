@@ -44,31 +44,57 @@ class ApiService {
 
   // Sweets
   async getSweets(query?: string): Promise<Sweet[]> {
-    // Always use mock data first
     try {
-      const { MOCK_SWEETS } = await import('@/lib/mockData');
-      let sweets = [...MOCK_SWEETS]; // Create a copy of the array
+      // First try to fetch from backend with authentication
+      const res = await fetch(`${API_URL}/sweets`, {
+        headers: this.getHeaders()
+      });
       
-      // Filter by query if provided
-      if (query) {
-        const lowerQuery = query.toLowerCase();
-        sweets = sweets.filter(sweet => 
-          sweet.name.toLowerCase().includes(lowerQuery) || 
-          sweet.description.toLowerCase().includes(lowerQuery) ||
-          sweet.category.toLowerCase().includes(lowerQuery)
-        );
+      if (!res.ok) {
+        // If unauthorized, try to refresh token or use mock data
+        if (res.status === 401) {
+          console.warn('Unauthorized access to /sweets endpoint, using mock data');
+          throw new Error('Unauthorized');
+        }
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
       
-      // Ensure all images are valid URLs
-      sweets = sweets.map(sweet => ({
-        ...sweet,
+      const sweets = await res.json();
+      // Map backend response to frontend Sweet type
+      return sweets.map((sweet: any) => ({
+        id: sweet.id,
+        name: sweet.name,
+        category: sweet.category,
+        price: sweet.price,
+        stock: sweet.quantity || 0,
+        description: sweet.description || '',
         imageUrl: sweet.imageUrl || 'https://i.imgur.com/8kQ9X9d.jpg'
       }));
-      
-      return sweets;
     } catch (error) {
-      console.error('Error loading mock data:', error);
-      return [];
+      console.warn('Using mock data as fallback:', error);
+      try {
+        const { MOCK_SWEETS } = await import('@/lib/mockData');
+        let sweets = [...MOCK_SWEETS];
+        
+        // Filter by query if provided
+        if (query) {
+          const lowerQuery = query.toLowerCase();
+          sweets = sweets.filter(sweet => 
+            sweet.name.toLowerCase().includes(lowerQuery) || 
+            sweet.description.toLowerCase().includes(lowerQuery) ||
+            sweet.category.toLowerCase().includes(lowerQuery)
+          );
+        }
+        
+        // Ensure all images are valid URLs
+        return sweets.map(sweet => ({
+          ...sweet,
+          imageUrl: sweet.imageUrl || 'https://i.imgur.com/8kQ9X9d.jpg'
+        }));
+      } catch (mockError) {
+        console.error('Error loading mock data:', mockError);
+        return [];
+      }
     }
   }
 
