@@ -1,0 +1,30 @@
+Generate a complete React frontend for a Sweet Shop Management System as a single-page application (SPA). Use React 18 with hooks, React Router for navigation, Axios for API calls, Tailwind CSS for styling (calm palette: light orange #FFDAB9, cream #FFF5E1, beige #F5DEB3, dark gray #4A4A4A for text, soft green #90EE90 for success), and react-beautiful-dnd for any drag-drop if needed. Include Recharts for admin analytics charts. Follow TDD: First generate unit/integration tests with Jest and React Testing Library (e.g., test components render, API calls succeed/fail), then implement code to pass them. Ensure clean, readable, maintainable code per MNC standards: modular components, prop types, error boundaries, loading spinners, context for state (auth, cart), SOLID principles, JSDoc comments.
+Core Features (from spec):
+
+User registration/login forms (POST to /api/auth/register and /api/auth/login, store JWT in localStorage).
+Protected routes (use auth context to redirect unauth users).
+Dashboard/homepage: List all sweets (GET /api/sweets), with search/filter by name/category/price (GET /api/sweets/search?query=...).
+Each sweet card: Name, category, price, quantity, 'Add to Cart' button (disabled if quantity=0).
+Purchase: From cart, POST /api/sweets/:id/purchase for each item, update stock.
+Admin-only: Forms to add (POST /api/sweets), update (PUT /api/sweets/:id), delete (DELETE /api/sweets/:id), restock (POST /api/sweets/:id/restock).
+
+Extras to stand out:
+
+Landing page: Hero section with welcome, featured sweets carousel, CTA to login/register.
+Cart system: Modal/cart page to view/add/remove items, calculate total, checkout (batch purchase).
+Admin analytics dashboard: Charts for sales trends, stock levels (fetch from custom GET /api/analytics).
+Dark mode toggle (button in header, persist in localStorage).
+Real-time stock polling (every 10s on dashboard).
+Export sweets to CSV (button on dashboard).
+Responsive (mobile-first), accessible (ARIA, semantic HTML).
+
+Project Structure:
+
+src/components: AuthForm, SweetCard, CartModal, AdminForm, AnalyticsChart, etc.
+src/context: AuthContext, CartContext.
+src/pages: Landing, Login, Register, Dashboard, AdminPanel, Cart.
+src/services: api.js (Axios instance with JWT interceptor).
+src/tests: For each component/page.
+API base: Configurable env var, default http://localhost:8080/api.
+
+Generate all files, including package.json with dependencies (react-router-dom, axios, tailwindcss, recharts, jest, etc.), setup scripts, and a README.md section for frontend setup/run (npm install, npm start). In README, add 'My AI Usage': 'Used [AI Tool] to generate initial component boilerplate and tests, manually refined for extras like cart and analytics.' Ensure commit-friendly: Suggest commits like 'test: Add failing tests for AuthForm' then 'feat: Implement AuthForm to pass tests'.
